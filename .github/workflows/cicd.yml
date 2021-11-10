@@ -20,5 +20,5 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml 
     
-    - name: Check dir
+    - name: Upload file to Server (Replace with rsync)
       run: cd /home/runner/work/MC-Plugin-Environment/MC-Plugin-Environment/target/ && ls -la
