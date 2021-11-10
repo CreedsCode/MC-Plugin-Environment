@@ -1,5 +1,5 @@
 # User-specific stuff
-.idea/
+.idea
 
 *.iml
 *.ipr
@@ -115,4 +115,7 @@ run/
 
 # Your mom belongs in here too
 Server/*
-!.idea/runConfigurations
+!Server/eula.txt
+!.idea/
+.idea/*
+!.idea/runConfigurations/
