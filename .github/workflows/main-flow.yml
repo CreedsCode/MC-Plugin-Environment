@@ -1,0 +1,71 @@
+name: Build and Upload to Server
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  compile:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 17
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+        cache: maven
+    - name: Compiling
+      run: mvn -B compile
+  build:
+    runs-on: ubuntu-20.04
+    needs: compile
+    name: Build
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v2
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+    - name: Set up JDK 17
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+        cache: maven
+    - name: Build and test project
+      working-directory: github-actions-java-maven
+      run: mvn -B verify
+    - name: Upload Maven build artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: DemoPlugin.jar
+        path: /target/DemoPlugin.jar
+  deploy:
+    runs-on: ubuntu-20.04
+    needs: build
+    name: Deploys to server
+    steps:
+    - uses: actions/checkout@v2
+    - name: Download Maven build artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: DemoPlugin.jar
+        path: /target/DemoPlugin.jar
+    - name: FTP Deploy
+      uses: SamKirkland/FTP-Deploy-Action@4.1.0
+      with:
+        # ftp server
+        server: ${{secrets.SERVER }}
+        # ftp port
+        port: ${{secrets.PORT}}
+        # ftp username
+        username: ${{secrets.USERNAME }}
+        # ftp password
+        password: ${{secrets.PASSWORD }}
+        # Folder to upload from, must end with trailing slash /
+        local-dir: /target/DemoPlugin.jar
+        # Path to upload to on the server. Must end with trailing slash /
+        server-dir: /DemoPlugin.jar
