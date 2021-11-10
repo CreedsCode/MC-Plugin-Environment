@@ -1,0 +1,7 @@
+name: DemoPlugin
+version: '${project.version}'
+main: cc.creedscode.demoplugin.DemoPlugin
+api-version: 1.17
+authors: [ CreedsCode ]
+description: Just a plugin template
+website: https://github.com/creedscode
